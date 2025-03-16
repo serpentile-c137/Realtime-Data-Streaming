@@ -4,7 +4,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 
 default_args = {
-    'owner': 'airscholar',
+    'owner': 'shardul-streaming-airflow',
     'start_date': datetime(2025, 3, 16, 10, 00)
 }
 
