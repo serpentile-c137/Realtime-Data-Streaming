@@ -1,11 +1,12 @@
-import uuid
+# import uuid
+from uuid import UUID
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
 default_args = {
-    'owner': 'shardul-streaming-airflow',
-    'start_date': datetime(2025, 3, 16, 10, 00)
+    'owner': 'airscholar',
+    'start_date': datetime(2023, 9, 3, 10, 00)
 }
 
 def get_data():
@@ -17,10 +18,10 @@ def get_data():
 
     return res
 
-
 def format_data(res):
     data = {}
     location = res['location']
+    data['id'] = res['login']['uuid']
     # data['id'] = uuid.uuid4()
     data['first_name'] = res['name']['first']
     data['last_name'] = res['name']['last']
@@ -43,11 +44,7 @@ def stream_data():
     import time
     import logging
 
-    res = get_data()
-    res = format_data(res)
-    # print(json.dumps(res, indent=3))
     producer = KafkaProducer(bootstrap_servers=['broker:29092'], max_block_ms=5000)
-    
     curr_time = time.time()
 
     while True:
@@ -61,10 +58,6 @@ def stream_data():
         except Exception as e:
             logging.error(f'An error occured: {e}')
             continue
-
-
-stream_data()
-
 
 with DAG('user_automation',
          default_args=default_args,
